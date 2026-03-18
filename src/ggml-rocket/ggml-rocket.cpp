@@ -7,7 +7,6 @@
 #include <cstring>
 #include <cassert>
 
-// Include librocket interface
 extern "C" {
 #include "rocket_interface.h"
 }
@@ -50,9 +49,6 @@ static ggml_backend_buffer_t ggml_backend_rocket_alloc_buffer(ggml_backend_t bac
     }
 
     buf->size = size;
-
-    // For now, return the buffer context directly
-    // GGML will wrap it with its own buffer structure
     return (ggml_backend_buffer_t)buf;
 }
 
@@ -67,18 +63,9 @@ static ggml_backend_t ggml_backend_rocket_init_impl(void) {
         return NULL;
     }
 
-    ctx->cpu_dequant = true;  // Default to CPU dequantization
-
-    fprintf(stderr, "Rocket NPU backend initialized\n");
-
-    // Return context as opaque backend handle
-    // The actual GGML backend wrapper will be created by GGML
+    ctx->cpu_dequant = true;
     return (ggml_backend_t)ctx;
 }
-
-// ============================================================================
-// Backend Registration Interface (for GGML device enumeration)
-// ============================================================================
 
 struct ggml_backend_rocket_reg_context {
     bool device_available;
@@ -96,8 +83,6 @@ static size_t ggml_backend_rocket_reg_get_device_count(ggml_backend_reg_t reg) {
         return 0;
     }
 
-    // Check if Rocket device is available by trying to open it
-    // Silently probe - no error messages during device enumeration
     struct rocket_ctx test_ctx;
     int ret = rocket_open(&test_ctx);
 
@@ -105,10 +90,10 @@ static size_t ggml_backend_rocket_reg_get_device_count(ggml_backend_reg_t reg) {
         rocket_close(&test_ctx);
         ctx->device_available = true;
         return 1;
-    } else {
-        ctx->device_available = false;
-        return 0;
     }
+
+    ctx->device_available = false;
+    return 0;
 }
 
 static ggml_backend_dev_t ggml_backend_rocket_reg_get_device(ggml_backend_reg_t reg, size_t index) {
@@ -143,10 +128,6 @@ ggml_backend_reg_t ggml_backend_rocket_reg(void) {
 
     return &reg;
 }
-
-// ============================================================================
-// Direct Backend Initialization (for explicit use)
-// ============================================================================
 
 GGML_BACKEND_API ggml_backend_t ggml_backend_rocket_init(void) {
     return ggml_backend_rocket_init_impl();
