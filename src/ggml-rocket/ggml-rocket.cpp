@@ -96,20 +96,18 @@ static size_t ggml_backend_rocket_reg_get_device_count(ggml_backend_reg_t reg) {
         return 0;
     }
 
-    // Check if Rocket device is available
-    // We do this by trying to open it
+    // Check if Rocket device is available by trying to open it
+    // Silently probe - no error messages during device enumeration
     struct rocket_ctx test_ctx;
     int ret = rocket_open(&test_ctx);
 
     if (ret == 0) {
-        // Device is available
         rocket_close(&test_ctx);
         ctx->device_available = true;
-        return 1;  // One Rocket NPU device
+        return 1;
     } else {
-        // Device not available
         ctx->device_available = false;
-        return 0;  // No devices
+        return 0;
     }
 }
 
