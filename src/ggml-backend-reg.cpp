@@ -70,6 +70,10 @@
 #include "ggml-rpc.h"
 #endif
 
+#ifdef GGML_USE_ROCKET
+#include "ggml-rocket/ggml-rocket.h"
+#endif
+
 #ifdef GGML_USE_VIRTGPU_FRONTEND
 #include "ggml-virtgpu.h"
 #endif
@@ -157,6 +161,11 @@ struct ggml_backend_registry {
 #endif
 #ifdef GGML_USE_RPC
         register_backend(ggml_backend_rpc_reg());
+#endif
+#ifdef GGML_USE_ROCKET
+        // Rocket backend initialization
+        // Note: Rocket uses direct initialization, not the registry pattern
+        // This will be called when needed
 #endif
 #ifdef GGML_USE_OPENVINO
         register_backend(ggml_backend_openvino_reg());
