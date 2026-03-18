@@ -76,6 +76,80 @@ static ggml_backend_t ggml_backend_rocket_init_impl(void) {
     return (ggml_backend_t)ctx;
 }
 
+// ============================================================================
+// Backend Registration Interface (for GGML device enumeration)
+// ============================================================================
+
+struct ggml_backend_rocket_reg_context {
+    bool device_available;
+};
+
+static const char * ggml_backend_rocket_reg_get_name(ggml_backend_reg_t reg) {
+    (void)reg;
+    return "Rocket";
+}
+
+static size_t ggml_backend_rocket_reg_get_device_count(ggml_backend_reg_t reg) {
+    struct ggml_backend_rocket_reg_context * ctx = (struct ggml_backend_rocket_reg_context *)reg->context;
+
+    if (!ctx) {
+        return 0;
+    }
+
+    // Check if Rocket device is available
+    // We do this by trying to open it
+    struct rocket_ctx test_ctx;
+    int ret = rocket_open(&test_ctx);
+
+    if (ret == 0) {
+        // Device is available
+        rocket_close(&test_ctx);
+        ctx->device_available = true;
+        return 1;  // One Rocket NPU device
+    } else {
+        // Device not available
+        ctx->device_available = false;
+        return 0;  // No devices
+    }
+}
+
+static ggml_backend_dev_t ggml_backend_rocket_reg_get_device(ggml_backend_reg_t reg, size_t index) {
+    struct ggml_backend_rocket_reg_context * ctx = (struct ggml_backend_rocket_reg_context *)reg->context;
+
+    if (!ctx || index != 0 || !ctx->device_available) {
+        return NULL;
+    }
+
+    // Return a device handle (for now, just return a non-null pointer)
+    // In a full implementation, this would be a proper device structure
+    return (ggml_backend_dev_t)ctx;
+}
+
+static const struct ggml_backend_reg_i ggml_backend_rocket_reg_i = {
+    /* .get_name         = */ ggml_backend_rocket_reg_get_name,
+    /* .get_device_count = */ ggml_backend_rocket_reg_get_device_count,
+    /* .get_device       = */ ggml_backend_rocket_reg_get_device,
+    /* .get_proc_address = */ NULL,
+};
+
+ggml_backend_reg_t ggml_backend_rocket_reg(void) {
+    static struct ggml_backend_rocket_reg_context ctx = {
+        .device_available = false,
+    };
+
+    static struct ggml_backend_reg reg = {
+        /* .api_version = */ GGML_BACKEND_API_VERSION,
+        /* .iface       = */ ggml_backend_rocket_reg_i,
+        /* .context     = */ &ctx,
+    };
+
+    return &reg;
+}
+
+// ============================================================================
+// Direct Backend Initialization (for explicit use)
+// ============================================================================
+
 GGML_BACKEND_API ggml_backend_t ggml_backend_rocket_init(void) {
     return ggml_backend_rocket_init_impl();
 }

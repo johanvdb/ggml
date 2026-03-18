@@ -1,27 +1,27 @@
-set(TARGET ggml-rocket)
+message(STATUS "Using Rocket backend")
 
-add_library(${TARGET} OBJECT
-    ggml-rocket.cpp
-)
+# Find librocket first
+find_library(LIBROCKET rocket HINTS /usr/local/lib /usr/lib)
 
-target_include_directories(${TARGET} PUBLIC
+if(NOT LIBROCKET)
+    message(FATAL_ERROR "librocket not found - Install from https://github.com/johanvdb/librocket")
+endif()
+
+message(STATUS "Found librocket: ${LIBROCKET}")
+
+# Use the standard GGML backend library macro
+ggml_add_backend_library(ggml-rocket
+                         ggml-rocket.cpp
+                        )
+
+# Add include directories
+target_include_directories(ggml-rocket PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${CMAKE_CURRENT_SOURCE_DIR}/../../include
     /usr/local/include
 )
 
-# Find librocket
-find_library(LIBROCKET rocket HINTS /usr/local/lib /usr/lib)
-
-if(LIBROCKET)
-    message(STATUS "Found librocket: ${LIBROCKET}")
-    target_link_libraries(${TARGET} PUBLIC ${LIBROCKET})
-else()
-    message(FATAL_ERROR "librocket not found - Install from https://github.com/johanvdb/librocket")
-endif()
-
-# Export for parent
-set(GGML_ROCKET_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/ggml-rocket.cpp PARENT_SCOPE)
-set(GGML_ROCKET_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/ggml-rocket.h PARENT_SCOPE)
+# Link against librocket
+target_link_libraries(ggml-rocket PUBLIC ${LIBROCKET})
 
