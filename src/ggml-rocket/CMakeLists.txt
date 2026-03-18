@@ -22,6 +22,7 @@ message(STATUS "Found librocket: ${LIBROCKET_LIBRARIES}")
 ggml_add_backend_library(ggml-rocket
                          ggml-rocket.cpp
                          ggml-rocket-ops.cpp
+                         ggml-rocket-matmul.cpp
                         )
 
 # Add include directories
