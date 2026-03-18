@@ -8,17 +8,17 @@ target_include_directories(${TARGET} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${CMAKE_CURRENT_SOURCE_DIR}/../../include
+    /usr/local/include
 )
 
-# Try to find librocket
-find_library(LIBROCKET rocket HINTS /usr/lib /usr/local/lib)
+# Find librocket
+find_library(LIBROCKET rocket HINTS /usr/local/lib /usr/lib)
 
 if(LIBROCKET)
     message(STATUS "Found librocket: ${LIBROCKET}")
     target_link_libraries(${TARGET} PUBLIC ${LIBROCKET})
 else()
-    message(WARNING "librocket not found - Rocket backend will not work without it")
-    message(STATUS "Install librocket from https://github.com/johanvdb/librocket")
+    message(FATAL_ERROR "librocket not found - Install from https://github.com/johanvdb/librocket")
 endif()
 
 # Export for parent
