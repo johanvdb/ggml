@@ -1,3 +1,12 @@
+/* SPDX-License-Identifier: MIT */
+/*
+ * GGML Rocket NPU Backend
+ *
+ * Provides GGML backend for RK3588 NPU via mainline Rocket driver.
+ * Register command format based on reverse engineering by Jasbir Matharu (mtx512).
+ * See: https://github.com/mtx512/rk3588-npu
+ */
+
 #pragma once
 
 #include "ggml-backend.h"

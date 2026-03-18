@@ -1,3 +1,11 @@
+/* SPDX-License-Identifier: MIT */
+/*
+ * GGML Rocket NPU Backend Implementation
+ *
+ * Register command format based on reverse engineering by Jasbir Matharu (mtx512).
+ * See: https://github.com/mtx512/rk3588-npu
+ */
+
 #include "ggml-rocket.h"
 #include "ggml-backend-impl.h"
 #include "../ggml-common.h"
