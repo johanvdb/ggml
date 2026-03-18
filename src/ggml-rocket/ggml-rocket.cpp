@@ -103,8 +103,6 @@ static ggml_backend_dev_t ggml_backend_rocket_reg_get_device(ggml_backend_reg_t 
         return NULL;
     }
 
-    // Return a device handle (for now, just return a non-null pointer)
-    // In a full implementation, this would be a proper device structure
     return (ggml_backend_dev_t)ctx;
 }
 
