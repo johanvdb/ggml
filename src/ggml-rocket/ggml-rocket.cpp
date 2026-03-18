@@ -29,6 +29,9 @@ struct ggml_backend_rocket_buffer {
     size_t size;
 };
 
+/* Forward declaration */
+enum ggml_status ggml_backend_rocket_graph_compute(ggml_backend_t backend, ggml_cgraph * cgraph);
+
 static const char * ggml_backend_rocket_name(ggml_backend_t backend) {
     (void)backend;
     return "Rocket";

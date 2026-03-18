@@ -21,6 +21,7 @@ message(STATUS "Found librocket: ${LIBROCKET_LIBRARIES}")
 # Use the standard GGML backend library macro
 ggml_add_backend_library(ggml-rocket
                          ggml-rocket.cpp
+                         ggml-rocket-ops.cpp
                         )
 
 # Add include directories
